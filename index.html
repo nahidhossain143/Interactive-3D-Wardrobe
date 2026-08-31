@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Interactive 3D Wardrobe</title>
+    <link rel="stylesheet" href="css/style.css" />
+    <script type="importmap">
+    {
+        "imports": {
+            "three": "./lib/three.module.js"
+        }
+    }
+    </script>
+</head>
+<body>
+    <canvas id="webgl-canvas"></canvas>
+
+    <div id="loading-message">Loading Interactive 3D Wardrobe&hellip;</div>
+
+    <div id="ui-overlay">
+        <div id="brand-panel">
+            <span class="brand-mark" aria-hidden="true"></span>
+            <h1>Interactive 3D Wardrobe</h1>
+        </div>
+
+        <div id="status-panel">
+            <span id="light-dot" class="paused"></span>
+            <span id="light-status">Light static</span>
+        </div>
+
+        <div id="controls-widget">
+            <button id="controls-toggle" type="button" aria-expanded="false" aria-controls="controls-body">
+                <span>Controls</span>
+                <svg class="chevron" width="10" height="6" viewBox="0 0 10 6" fill="none" aria-hidden="true">
+                    <path d="M1 1L5 5L9 1" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+            </button>
+
+            <div id="controls-body">
+                <div class="control-group">
+                    <h3>Mouse</h3>
+                    <ul>
+                        <li><span class="key">Drag</span><span class="desc">Orbit camera</span></li>
+                        <li><span class="key">Scroll</span><span class="desc">Zoom in / out</span></li>
+                        <li><span class="key">Click drawer</span><span class="desc">Open / close</span></li>
+                    </ul>
+                </div>
+
+                <div class="control-group">
+                    <h3>Keyboard</h3>
+                    <ul>
+                        <li><span class="key">&larr; &rarr;</span><span class="desc">Orbit camera</span></li>
+                        <li><span class="key">&uarr; &darr;</span><span class="desc">Tilt camera</span></li>
+                        <li><span class="key">+ / &minus;</span><span class="desc">Zoom in / out</span></li>
+                        <li><span class="key">R</span><span class="desc">Reset camera</span></li>
+                        <li><span class="key">1 2 3</span><span class="desc">Toggle a drawer</span></li>
+                        <li><span class="key">O / C</span><span class="desc">Open / close all drawers</span></li>
+                        <li><span class="key">D</span><span class="desc">Toggle doors</span></li>
+                        <li><span class="key">L</span><span class="desc">Rotate / freeze light</span></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="js/main.js"></script>
+</body>
+</html>

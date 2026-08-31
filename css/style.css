@@ -1,0 +1,239 @@
+* {
+    box-sizing: border-box;
+}
+
+:root {
+    --panel-bg: rgba(13, 14, 18, 0.74);
+    --panel-border: rgba(255, 255, 255, 0.08);
+    --text-primary: #f1efe8;
+    --text-secondary: #9994a3;
+    --text-muted: #726d7c;
+    --accent: #cfa35c;
+}
+
+html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: #0b0c10;
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+}
+
+#webgl-canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+    cursor: grab;
+}
+
+#webgl-canvas:active {
+    cursor: grabbing;
+}
+
+#loading-message {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-primary);
+    font-size: 1.1rem;
+    letter-spacing: 0.02em;
+    background: #0b0c10;
+    z-index: 20;
+    padding: 2rem;
+    text-align: center;
+}
+
+#loading-message.error {
+    color: #e59a8f;
+    max-width: 32rem;
+    margin: 0 auto;
+    line-height: 1.5;
+}
+
+/* ---------------- UI overlay ---------------- */
+
+#ui-overlay {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 10;
+}
+
+/* Title: no boxed panel, just a floating mark for an unobtrusive, cinematic feel */
+#brand-panel {
+    position: absolute;
+    top: 1.6rem;
+    left: 1.7rem;
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    pointer-events: none;
+}
+
+.brand-mark {
+    width: 0.32rem;
+    height: 1.35rem;
+    border-radius: 2px;
+    background: linear-gradient(180deg, #e2b978, #9c6f34);
+}
+
+#brand-panel h1 {
+    margin: 0;
+    font-size: 1.05rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    color: var(--text-primary);
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.6);
+}
+
+/* Status: small unobtrusive indicator, bottom-left */
+#status-panel {
+    position: absolute;
+    bottom: 1.6rem;
+    left: 1.7rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    pointer-events: none;
+    font-size: 0.72rem;
+    letter-spacing: 0.03em;
+    color: var(--text-secondary);
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.6);
+}
+
+#light-dot {
+    width: 0.42rem;
+    height: 0.42rem;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 6px 1px rgba(207, 163, 92, 0.65);
+    transition: background 0.2s ease, box-shadow 0.2s ease;
+}
+
+#light-dot.paused {
+    background: var(--text-muted);
+    box-shadow: none;
+}
+
+/* Controls: collapsible dropdown, top-right */
+#controls-widget {
+    position: absolute;
+    top: 1.6rem;
+    right: 1.7rem;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.55rem;
+    pointer-events: auto;
+}
+
+#controls-toggle {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    background: var(--panel-bg);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--panel-border);
+    border-radius: 999px;
+    padding: 0.5rem 1.05rem;
+    color: var(--text-primary);
+    font: inherit;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+#controls-toggle:hover {
+    background: rgba(22, 23, 29, 0.86);
+    border-color: rgba(207, 163, 92, 0.4);
+}
+
+#controls-toggle .chevron {
+    color: var(--accent);
+    transition: transform 0.25s ease;
+}
+
+#controls-toggle[aria-expanded="true"] .chevron {
+    transform: rotate(180deg);
+}
+
+#controls-body {
+    width: 15.5rem;
+    max-height: 0;
+    opacity: 0;
+    overflow: hidden;
+    background: var(--panel-bg);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--panel-border);
+    border-radius: 12px;
+    padding: 0 1.1rem;
+    transition: max-height 0.32s ease, opacity 0.25s ease, padding 0.32s ease;
+}
+
+#controls-body.expanded {
+    max-height: 26rem;
+    opacity: 1;
+    padding: 0.9rem 1.1rem 1rem;
+}
+
+.control-group + .control-group {
+    margin-top: 0.7rem;
+}
+
+.control-group h3 {
+    margin: 0 0 0.35rem;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-muted);
+    font-weight: 600;
+}
+
+.control-group ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.control-group li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.6rem;
+    font-size: 0.78rem;
+    padding: 0.2rem 0;
+    color: var(--text-primary);
+}
+
+.control-group .key {
+    font-family: 'Consolas', monospace;
+    background: rgba(255, 255, 255, 0.07);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 4px;
+    padding: 0.05rem 0.4rem;
+    font-size: 0.71rem;
+    color: var(--text-primary);
+    white-space: nowrap;
+}
+
+.control-group .desc {
+    text-align: right;
+    color: var(--text-secondary);
+}
+
+@media (max-width: 640px) {
+    #controls-body {
+        width: 12.5rem;
+        font-size: 0.7rem;
+    }
+}
