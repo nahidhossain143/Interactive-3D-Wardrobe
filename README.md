@@ -48,7 +48,10 @@ custom shader described below, matching the scope of the course.
   keyboard orbit/zoom/reset
 - Click-to-toggle drawers via raycasting (mouse picking)
 - Full keyboard control surface (see §7)
-- Minimal dark-themed room (floor + two walls) and a clean floating UI
+- Dark-themed room (floor + two walls) with three wall-mounted picture
+  frames, and a clean floating UI
+- Furniture detailing on the wardrobe: a crown cornice, a dark toe-kick
+  trim strip, and bar-pull handles with sphere end-caps
 
 ## 4. System / Scene Design
 
@@ -59,10 +62,16 @@ custom shader described below, matching the scope of the course.
 - Lower section: three stacked drawers, each holding a small folded-cloth
   stack (and one holds a rolled item), separated from the upper section
   by a horizontal divider panel
+- Furniture detailing: a crown cornice above the top panel, a dark
+  toe-kick trim strip along the base, and door/drawer handles finished
+  with small sphere end-caps so they read as real bar-pull hardware
 
-**Room**: a dark floor and two back/side walls, kept deliberately plain so
-the wardrobe stays the visual focus and the light's movement (when
-rotating) reads clearly against the surfaces.
+**Room**: a dark floor and two back/side walls, dressed with three
+wall-mounted picture frames (a wooden border box + a smaller colored
+"canvas" box, built the same way as everything else) so the space feels
+furnished rather than empty, while staying plain enough that the
+wardrobe stays the visual focus and the light's movement (when rotating)
+reads clearly against the surfaces.
 
 **Light**: a single point-like light source, represented visually by a
 small glowing marker, orbiting the wardrobe on a horizontal circular path
@@ -115,7 +124,7 @@ Ambient + Diffuse + Specular (Phong) lighting model in world space:
 ambient  = uAmbientColor
 diffuse  = max(dot(N, L), 0) * uLightColor * 0.55
 specular = pow(max(dot(N, H), 0), uShininess) * uLightColor * 0.22
-finalColor = texColor.rgb * max(ambient + diffuse + specular, 0.22)
+finalColor = texColor.rgb * max(ambient + diffuse + specular, 0.3)
 ```
 
 where `N` is the surface normal, `L` is the normalized direction toward
@@ -147,9 +156,11 @@ drag and the arrow keys adjust `azimuth`/`polar`; the scroll wheel and
 
 ### 5.5 Transformations — translation, rotation, scaling
 
-- **Scaling + Translation**: the wardrobe body, drawers, doors and every
-  clothing item are `BoxGeometry`/`CylinderGeometry` primitives sized and
-  positioned to form a compound object ([`js/wardrobe.js`](js/wardrobe.js)).
+- **Scaling + Translation**: the wardrobe body, drawers, doors, clothing
+  items, cornice/toe-kick trim and handle end-caps are all
+  `BoxGeometry`/`CylinderGeometry`/`SphereGeometry` primitives sized and
+  positioned to form a compound object ([`js/wardrobe.js`](js/wardrobe.js));
+  the wall picture frames follow the same pattern in [`js/scene.js`](js/scene.js).
 - **Translation**: opening a drawer moves its pivot group forward along
   local Z; closing reverses it.
 - **Rotation**: opening a door rotates its pivot group around a hinge
@@ -192,7 +203,7 @@ project/
 ├── css/style.css              overlay UI styling
 ├── js/
 │   ├── main.js                 bootstraps renderer + wires every module together
-│   ├── scene.js                 THREE.Scene + minimal room (floor/walls)
+│   ├── scene.js                 THREE.Scene + room (floor/walls, wall picture frames)
 │   ├── camera.js                perspective camera, manual spherical orbit + zoom
 │   ├── wardrobe.js              builds body/doors/drawers/contents, exposes open/close API
 │   ├── interaction.js           keyboard + mouse + click-raycast input handling
@@ -259,8 +270,11 @@ so no internet connection or `npm install` is required at demo time.
 - **Light starts static, rotates on demand (`L` key)** — gives a calm,
   presentable default view while still fully implementing and letting the
   evaluator demonstrate the required continuously-rotating light behavior.
-- **Dark, minimal room** — keeps the wardrobe as the visual focus and
-  makes the lighting/shading changes easy to see against a neutral
+- **Dark room, tuned for visibility** — the ambient term and the
+  fragment shader's brightness floor are set high enough that the room
+  and wardrobe stay clearly visible, while the room itself is kept plain
+  (aside from the wall frames) so the wardrobe stays the visual focus
+  and lighting/shading changes are easy to see against a neutral
   backdrop.
 
 ## 10. Possible Future Improvements
@@ -284,5 +298,6 @@ interaction, without relying on any technique outside the course's scope.
 
 - Built with Three.js r160 (`ShaderMaterial`, `CanvasTexture`, `Raycaster`,
   `PerspectiveCamera` — no post-processing, physics, or PBR materials used).
-- The room (floor + two walls) is intentionally minimal so the light's
-  effect stays easy to see and the wardrobe stays the visual focus.
+- The room (floor + two walls + three picture frames) is kept simple so
+  the light's effect stays easy to see and the wardrobe stays the
+  visual focus.

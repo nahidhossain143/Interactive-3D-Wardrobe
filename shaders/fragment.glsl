@@ -56,7 +56,7 @@ void main() {
     // the orbiting light (e.g. the inside of an open door) never renders
     // as pure black - the wardrobe should stay clearly visible from any
     // camera/light angle.
-    lighting = max(lighting, vec3(0.22));
+    lighting = max(lighting, vec3(0.3));
 
     vec3 finalColor = texColor.rgb * lighting;
 

@@ -41,11 +41,11 @@ export function createWoodTexture(baseColor, grainColor, options = {}) {
     for (let p = 0; p < plankCount; p++) {
         const x0 = p * plankWidth;
 
-        ctx.fillStyle = p % 2 === 0 ? shade(baseColor, 5) : shade(baseColor, -5);
+        ctx.fillStyle = p % 2 === 0 ? shade(baseColor, 7) : shade(baseColor, -7);
         ctx.fillRect(x0, 0, plankWidth, height);
 
         // seam between planks
-        ctx.strokeStyle = shade(baseColor, -32);
+        ctx.strokeStyle = shade(baseColor, -38);
         ctx.lineWidth = 2;
         ctx.beginPath();
         ctx.moveTo(x0, 0);
@@ -54,7 +54,7 @@ export function createWoodTexture(baseColor, grainColor, options = {}) {
 
         // wavy grain lines
         ctx.strokeStyle = grainColor;
-        ctx.globalAlpha = 0.3;
+        ctx.globalAlpha = 0.38;
         const grainLines = 9;
         for (let g = 0; g < grainLines; g++) {
             const y = (g + 0.5) * (height / grainLines) + (Math.random() - 0.5) * 6;
@@ -97,7 +97,7 @@ export function createFloorTexture() {
     const tileSize = size / tiles;
     for (let r = 0; r < tiles; r++) {
         for (let c = 0; c < tiles; c++) {
-            ctx.fillStyle = (r + c) % 2 === 0 ? '#232429' : '#1b1c21';
+            ctx.fillStyle = (r + c) % 2 === 0 ? '#32343c' : '#282a31';
             ctx.fillRect(c * tileSize, r * tileSize, tileSize, tileSize);
         }
     }
@@ -127,13 +127,13 @@ export function createWallTexture() {
     const canvas = makeCanvas(size, size);
     const ctx = canvas.getContext('2d');
 
-    ctx.fillStyle = '#1a1b20';
+    ctx.fillStyle = '#2b2d33';
     ctx.fillRect(0, 0, size, size);
 
     for (let i = 0; i < 2500; i++) {
         const x = Math.random() * size;
         const y = Math.random() * size;
-        ctx.fillStyle = Math.random() > 0.5 ? 'rgba(0,0,0,0.12)' : 'rgba(255,255,255,0.03)';
+        ctx.fillStyle = Math.random() > 0.5 ? 'rgba(0,0,0,0.1)' : 'rgba(255,255,255,0.045)';
         ctx.fillRect(x, y, 2, 2);
     }
 

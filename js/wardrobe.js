@@ -86,6 +86,23 @@ export function buildWardrobe(shaderSource) {
     base.position.set(0, -0.03, 0);
     group.add(base);
 
+    // Dark trim accents - a crown cornice up top and a toe-kick strip at
+    // the base - give the wardrobe a more finished, furniture-grade look
+    // beyond a plain box (same Translation/Scaling primitive pattern).
+    const trimMaterial = createLitMaterial(shaderSource, createSolidTexture('#241811'), { shininess: 22 });
+
+    const cornice = new THREE.Mesh(new THREE.BoxGeometry(WIDTH + 0.1, 0.05, DEPTH + 0.06), bodyMaterial);
+    cornice.position.set(0, HEIGHT + 0.025, 0);
+    group.add(cornice);
+
+    const corniceTrim = new THREE.Mesh(new THREE.BoxGeometry(WIDTH + 0.1, 0.018, DEPTH + 0.06), trimMaterial);
+    corniceTrim.position.set(0, HEIGHT - 0.006, 0);
+    group.add(corniceTrim);
+
+    const toeKick = new THREE.Mesh(new THREE.BoxGeometry(WIDTH - 0.1, 0.05, 0.02), trimMaterial);
+    toeKick.position.set(0, -0.03, DEPTH / 2 + 0.021);
+    group.add(toeKick);
+
     // ================= DOORS (upper section) =================
     const doorHeight = HEIGHT - DRAWER_SECTION_HEIGHT - PANEL * 1.5;
     const doorWidth = WIDTH / 2 - PANEL - 0.01;
@@ -264,6 +281,7 @@ function createDoor({ width, height, thickness, hingeX, y, material, handleMater
     const handle = new THREE.Mesh(new THREE.CylinderGeometry(0.012, 0.012, 0.16, 10), handleMaterial);
     handle.rotation.z = Math.PI / 2;
     handle.position.set(sign * (width - 0.09), 0, thickness / 2 + 0.03);
+    addHandleCaps(handle, 0.08, 0.02, handleMaterial);
     pivot.add(handle);
 
     return {
@@ -297,9 +315,11 @@ function createDrawer({ width, height, depth, y, frontZ, material, handleMateria
     pivot.add(front);
 
     // Handle
-    const handle = new THREE.Mesh(new THREE.CylinderGeometry(0.01, 0.01, width * 0.3, 8), handleMaterial);
+    const handleLength = width * 0.3;
+    const handle = new THREE.Mesh(new THREE.CylinderGeometry(0.01, 0.01, handleLength, 8), handleMaterial);
     handle.rotation.z = Math.PI / 2;
     handle.position.set(0, 0, frontZ + 0.035);
+    addHandleCaps(handle, handleLength / 2, 0.017, handleMaterial);
     pivot.add(handle);
 
     // Folded clothes resting inside the open drawer, riding along with it
@@ -379,4 +399,18 @@ function createFoldedStack({ x, z, yBase, width, depth, layerHeight, materials }
 
 function makeColorMaterial(shaderSource, hex, shininess = 8) {
     return createLitMaterial(shaderSource, createSolidTexture(hex), { shininess });
+}
+
+// Adds small sphere end-caps to a handle cylinder so it reads as a proper
+// bar-pull instead of a bare rod. Added as children of the handle mesh
+// itself so they automatically inherit its rotation/position.
+function addHandleCaps(handleMesh, halfLength, radius, material) {
+    const capGeometry = new THREE.SphereGeometry(radius, 8, 8);
+    const capA = new THREE.Mesh(capGeometry, material);
+    capA.position.set(0, halfLength, 0);
+    handleMesh.add(capA);
+
+    const capB = new THREE.Mesh(capGeometry, material);
+    capB.position.set(0, -halfLength, 0);
+    handleMesh.add(capB);
 }

@@ -14,7 +14,7 @@ import * as THREE from '../lib/three.module.js';
 export const sharedUniforms = {
     uLightPosition: { value: new THREE.Vector3(3, 3, 3) },
     uLightColor: { value: new THREE.Color(0xfff4d6) },
-    uAmbientColor: { value: new THREE.Color(0x5c586a) },
+    uAmbientColor: { value: new THREE.Color(0x726c80) },
     uViewPosition: { value: new THREE.Vector3() },
 };
 
