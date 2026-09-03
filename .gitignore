@@ -1,3 +1,6 @@
 .claude/
 .DS_Store
 Thumbs.db
+
+# Personal report drafts (contain real names/student IDs) - not part of the showcase project
+report/
