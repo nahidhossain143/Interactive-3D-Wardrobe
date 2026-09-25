@@ -16,19 +16,25 @@
 </head>
 <body>
     <canvas id="webgl-canvas"></canvas>
+    <div id="vignette" aria-hidden="true"></div>
 
     <div id="loading-message">Loading Interactive 3D Wardrobe&hellip;</div>
 
     <div id="ui-overlay">
         <div id="brand-panel">
             <span class="brand-mark" aria-hidden="true"></span>
-            <h1>Interactive 3D Wardrobe</h1>
+            <div class="brand-text">
+                <h1>Interactive 3D Wardrobe</h1>
+                <p class="brand-subtitle">CSE 4204 &middot; Computer Graphics Lab</p>
+            </div>
         </div>
 
         <div id="status-panel">
-            <span id="light-dot" class="paused"></span>
-            <span id="light-status">Light static</span>
+            <span id="light-dot"></span>
+            <span id="light-status">Light rotating</span>
         </div>
+
+        <div id="hint-toast">Drag to orbit &bull; Scroll to zoom &bull; Click a drawer or door to open it</div>
 
         <div id="controls-widget">
             <button id="controls-toggle" type="button" aria-expanded="false" aria-controls="controls-body">

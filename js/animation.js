@@ -1,9 +1,3 @@
-// animation.js
-// The single requestAnimationFrame loop that ties everything together
-// each frame: reads input to move the camera, advances the rotating
-// light, smoothly animates drawers/doors toward their targets, and
-// renders the scene.
-
 import * as THREE from '../lib/three.module.js';
 import { updateCamera } from './camera.js';
 import { updateLighting } from './lighting.js';
@@ -14,7 +8,6 @@ const clock = new THREE.Clock();
 
 export function startAnimationLoop({ renderer, scene, camera, wardrobe }) {
     function frame() {
-        // Clamp deltaTime so a dropped/backgrounded frame can't cause a huge jump.
         const deltaTime = Math.min(clock.getDelta(), 0.05);
 
         updateCamera(camera, inputState, deltaTime);

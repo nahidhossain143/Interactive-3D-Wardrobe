@@ -1,13 +1,3 @@
-// main.js
-// Entry point: creates the WebGL renderer, loads the custom GLSL shader
-// source, and wires together scene.js, camera.js, wardrobe.js,
-// lighting.js, interaction.js and animation.js.
-//
-// Pipeline overview (Three.js -> WebGL -> GLSL):
-//   Three.js builds geometries/materials and issues WebGL draw calls.
-//   Each draw call runs our custom vertex.glsl then fragment.glsl on
-//   the GPU, using the attributes/uniforms/varyings described there.
-
 import * as THREE from '../lib/three.module.js';
 import { createScene } from './scene.js';
 import { createCamera } from './camera.js';
@@ -24,7 +14,6 @@ async function init() {
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.setSize(window.innerWidth, window.innerHeight);
 
-    // Load the external vertex/fragment shader files once at startup.
     const shaderSource = await loadShaderSource();
 
     const scene = createScene(shaderSource);
@@ -33,7 +22,7 @@ async function init() {
     const wardrobe = buildWardrobe(shaderSource);
     scene.add(wardrobe.group);
 
-    const lighting = createLighting(scene);
+    const lighting = createLighting(scene, shaderSource);
 
     setupInteraction(canvas, camera, wardrobe, lighting);
     setupControlsDropdown();
@@ -49,8 +38,6 @@ async function init() {
     startAnimationLoop({ renderer, scene, camera, wardrobe });
 }
 
-// Wires the top-right "Controls" pill to expand/collapse the mouse and
-// keyboard instructions panel, so the scene stays uncluttered by default.
 function setupControlsDropdown() {
     const toggle = document.getElementById('controls-toggle');
     const body = document.getElementById('controls-body');

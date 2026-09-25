@@ -57,7 +57,13 @@ html, body {
     line-height: 1.5;
 }
 
-/* ---------------- UI overlay ---------------- */
+#vignette {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 5;
+    background: radial-gradient(ellipse at center, rgba(0, 0, 0, 0) 55%, rgba(0, 0, 0, 0.4) 100%);
+}
 
 #ui-overlay {
     position: fixed;
@@ -66,22 +72,51 @@ html, body {
     z-index: 10;
 }
 
-/* Title: no boxed panel, just a floating mark for an unobtrusive, cinematic feel */
+@keyframes fade-in-down {
+    from {
+        opacity: 0;
+        transform: translateY(-8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fade-in-up {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
 #brand-panel {
     position: absolute;
     top: 1.6rem;
     left: 1.7rem;
     display: flex;
     align-items: center;
-    gap: 0.7rem;
+    gap: 0.75rem;
     pointer-events: none;
+    animation: fade-in-down 0.6s ease both;
 }
 
 .brand-mark {
     width: 0.32rem;
-    height: 1.35rem;
+    height: 2.1rem;
     border-radius: 2px;
     background: linear-gradient(180deg, #e2b978, #9c6f34);
+    box-shadow: 0 0 10px rgba(226, 185, 120, 0.35);
+}
+
+.brand-text {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
 }
 
 #brand-panel h1 {
@@ -93,7 +128,14 @@ html, body {
     text-shadow: 0 1px 4px rgba(0, 0, 0, 0.6);
 }
 
-/* Status: small unobtrusive indicator, bottom-left */
+.brand-subtitle {
+    margin: 0;
+    font-size: 0.7rem;
+    letter-spacing: 0.05em;
+    color: var(--text-secondary);
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.6);
+}
+
 #status-panel {
     position: absolute;
     bottom: 1.6rem;
@@ -105,7 +147,46 @@ html, body {
     font-size: 0.72rem;
     letter-spacing: 0.03em;
     color: var(--text-secondary);
-    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.6);
+    background: var(--panel-bg);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--panel-border);
+    border-radius: 999px;
+    padding: 0.42rem 0.9rem;
+    animation: fade-in-up 0.6s ease 0.1s both;
+}
+
+#hint-toast {
+    position: absolute;
+    bottom: 5.2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    pointer-events: none;
+    font-size: 0.76rem;
+    letter-spacing: 0.02em;
+    color: var(--text-primary);
+    background: var(--panel-bg);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--panel-border);
+    border-radius: 999px;
+    padding: 0.55rem 1.1rem;
+    white-space: nowrap;
+    opacity: 0;
+    animation: hint-lifecycle 6s ease 0.9s both;
+}
+
+@keyframes hint-lifecycle {
+    0% { opacity: 0; transform: translate(-50%, 8px); }
+    12% { opacity: 1; transform: translate(-50%, 0); }
+    82% { opacity: 1; transform: translate(-50%, 0); }
+    100% { opacity: 0; transform: translate(-50%, 0); }
+}
+
+@media (max-width: 640px) {
+    #hint-toast {
+        white-space: normal;
+        text-align: center;
+        max-width: 88vw;
+    }
 }
 
 #light-dot {
@@ -122,7 +203,6 @@ html, body {
     box-shadow: none;
 }
 
-/* Controls: collapsible dropdown, top-right */
 #controls-widget {
     position: absolute;
     top: 1.6rem;
@@ -132,6 +212,7 @@ html, body {
     align-items: flex-end;
     gap: 0.55rem;
     pointer-events: auto;
+    animation: fade-in-down 0.6s ease 0.05s both;
 }
 
 #controls-toggle {

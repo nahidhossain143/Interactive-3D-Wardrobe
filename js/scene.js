@@ -1,15 +1,9 @@
-// scene.js
-// Builds the THREE.Scene and a minimal room (floor + back wall + side
-// wall) around the wardrobe so the rotating light's effect is easy to
-// see on more than one surface. Kept deliberately simple so the
-// wardrobe stays the visual focus.
-
 import * as THREE from '../lib/three.module.js';
 import { createLitMaterial } from './shaderMaterial.js';
 import { createFloorTexture, createWallTexture, createSolidTexture } from './textures.js';
 
-const ROOM_SIZE = 14;
-const ROOM_HEIGHT = 5;
+export const ROOM_SIZE = 14;
+export const ROOM_HEIGHT = 7.4;
 
 export function createScene(shaderSource) {
     const scene = new THREE.Scene();
@@ -18,32 +12,58 @@ export function createScene(shaderSource) {
     const floorTexture = createFloorTexture();
     floorTexture.repeat.set(5, 5);
     const wallTexture = createWallTexture();
-    wallTexture.repeat.set(4, 2);
+    wallTexture.repeat.set(4, 3);
+    const ceilingTexture = createWallTexture();
+    ceilingTexture.repeat.set(4, 4);
 
     const floorMaterial = createLitMaterial(shaderSource, floorTexture, { shininess: 6 });
     const wallMaterial = createLitMaterial(shaderSource, wallTexture, { shininess: 4 });
+    const ceilingMaterial = createLitMaterial(shaderSource, ceilingTexture, { shininess: 3 });
 
-    // Floor: a plane rotated flat (Rotation transformation) to lie on the XZ plane
     const floor = new THREE.Mesh(new THREE.PlaneGeometry(ROOM_SIZE, ROOM_SIZE), floorMaterial);
     floor.rotation.x = -Math.PI / 2;
     scene.add(floor);
 
-    // Back wall
+    const ceiling = new THREE.Mesh(new THREE.PlaneGeometry(ROOM_SIZE, ROOM_SIZE), ceilingMaterial);
+    ceiling.rotation.x = Math.PI / 2;
+    ceiling.position.set(0, ROOM_HEIGHT, 0);
+    scene.add(ceiling);
+
     const backWall = new THREE.Mesh(new THREE.PlaneGeometry(ROOM_SIZE, ROOM_HEIGHT), wallMaterial);
     backWall.position.set(0, ROOM_HEIGHT / 2, -ROOM_SIZE / 2);
     scene.add(backWall);
 
-    // Side wall, also placed using a Rotation transformation
-    const sideWall = new THREE.Mesh(new THREE.PlaneGeometry(ROOM_SIZE, ROOM_HEIGHT), wallMaterial);
-    sideWall.rotation.y = Math.PI / 2;
-    sideWall.position.set(-ROOM_SIZE / 2, ROOM_HEIGHT / 2, 0);
-    scene.add(sideWall);
+    const frontWall = new THREE.Mesh(new THREE.PlaneGeometry(ROOM_SIZE, ROOM_HEIGHT), wallMaterial);
+    frontWall.rotation.y = Math.PI;
+    frontWall.position.set(0, ROOM_HEIGHT / 2, ROOM_SIZE / 2);
+    scene.add(frontWall);
 
-    // ---------------- Wall art: simple framed pictures ----------------
-    // Each frame is a thin wooden border box with a smaller, brightly
-    // colored "canvas" box set slightly in front of it - built from the
-    // same primitive + custom-shader pipeline as everything else, giving
-    // the room a furnished, gallery-like feel around the wardrobe.
+    const leftWall = new THREE.Mesh(new THREE.PlaneGeometry(ROOM_SIZE, ROOM_HEIGHT), wallMaterial);
+    leftWall.rotation.y = Math.PI / 2;
+    leftWall.position.set(-ROOM_SIZE / 2, ROOM_HEIGHT / 2, 0);
+    scene.add(leftWall);
+
+    const rightWall = new THREE.Mesh(new THREE.PlaneGeometry(ROOM_SIZE, ROOM_HEIGHT), wallMaterial);
+    rightWall.rotation.y = -Math.PI / 2;
+    rightWall.position.set(ROOM_SIZE / 2, ROOM_HEIGHT / 2, 0);
+    scene.add(rightWall);
+
+    const trimMaterial = createLitMaterial(shaderSource, createSolidTexture('#1d140c'), { shininess: 10 });
+    const BASEBOARD_H = 0.18;
+    const CROWN_H = 0.16;
+    const TRIM_DEPTH = 0.06;
+    const inset = TRIM_DEPTH / 2 + 0.005;
+
+    [
+        { y: BASEBOARD_H / 2, h: BASEBOARD_H },
+        { y: ROOM_HEIGHT - CROWN_H / 2, h: CROWN_H },
+    ].forEach(({ y, h }) => {
+        scene.add(createTrimStrip({ x: 0, y, z: -ROOM_SIZE / 2 + inset, width: ROOM_SIZE, height: h, depth: TRIM_DEPTH, material: trimMaterial }));
+        scene.add(createTrimStrip({ x: 0, y, z: ROOM_SIZE / 2 - inset, width: ROOM_SIZE, height: h, depth: TRIM_DEPTH, material: trimMaterial }));
+        scene.add(createTrimStrip({ x: -ROOM_SIZE / 2 + inset, y, z: 0, width: TRIM_DEPTH, height: h, depth: ROOM_SIZE, material: trimMaterial }));
+        scene.add(createTrimStrip({ x: ROOM_SIZE / 2 - inset, y, z: 0, width: TRIM_DEPTH, height: h, depth: ROOM_SIZE, material: trimMaterial }));
+    });
+
     const frameMaterial = createLitMaterial(shaderSource, createSolidTexture('#3c2a1b'), { shininess: 8 });
     const artMaterials = [
         createLitMaterial(shaderSource, createSolidTexture('#2f5d62'), { shininess: 4 }),
@@ -69,13 +89,22 @@ export function createScene(shaderSource) {
             width: 1.15, height: 0.85, frameMaterial, artMaterial: artMaterials[2],
         })
     );
+    scene.add(
+        createPictureFrame({
+            x: ROOM_SIZE / 2 - 0.05, y: 2.5, z: 1.8, rotationY: -Math.PI / 2,
+            width: 1.15, height: 0.85, frameMaterial, artMaterial: artMaterials[1],
+        })
+    );
 
     return scene;
 }
 
-// A wall-mounted picture frame: a wooden border box with a smaller,
-// colored "canvas" box set slightly in front of it (Translation +
-// Scaling of primitives, same construction style as the wardrobe).
+function createTrimStrip({ x, y, z, width, height, depth, material }) {
+    const strip = new THREE.Mesh(new THREE.BoxGeometry(width, height, depth), material);
+    strip.position.set(x, y, z);
+    return strip;
+}
+
 function createPictureFrame({ x, y, z, rotationY = 0, width, height, frameMaterial, artMaterial }) {
     const group = new THREE.Group();
     group.position.set(x, y, z);

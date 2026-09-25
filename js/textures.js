@@ -1,11 +1,3 @@
-// textures.js
-// Generates all surface textures procedurally on an HTML5 canvas and
-// wraps each one in a THREE.CanvasTexture. This keeps the project fully
-// self-contained (no external image downloads needed for the wardrobe
-// body, drawers, doors, floor and walls) while still exercising real
-// texture mapping: every mesh gets UV coordinates and the fragment
-// shader samples this texture with texture2D(uTexture, vUv).
-
 import * as THREE from '../lib/three.module.js';
 
 function makeCanvas(width, height) {
@@ -15,7 +7,6 @@ function makeCanvas(width, height) {
     return canvas;
 }
 
-// Lightens (positive amount) or darkens (negative amount) a hex color.
 function shade(hexColor, amount) {
     const color = new THREE.Color(hexColor);
     const hsl = { h: 0, s: 0, l: 0 };
@@ -25,7 +16,6 @@ function shade(hexColor, amount) {
     return '#' + color.getHexString();
 }
 
-// Wood-plank texture used for the wardrobe body, doors and drawer fronts.
 export function createWoodTexture(baseColor, grainColor, options = {}) {
     const width = options.width || 512;
     const height = options.height || 512;
@@ -44,7 +34,6 @@ export function createWoodTexture(baseColor, grainColor, options = {}) {
         ctx.fillStyle = p % 2 === 0 ? shade(baseColor, 7) : shade(baseColor, -7);
         ctx.fillRect(x0, 0, plankWidth, height);
 
-        // seam between planks
         ctx.strokeStyle = shade(baseColor, -38);
         ctx.lineWidth = 2;
         ctx.beginPath();
@@ -52,7 +41,6 @@ export function createWoodTexture(baseColor, grainColor, options = {}) {
         ctx.lineTo(x0, height);
         ctx.stroke();
 
-        // wavy grain lines
         ctx.strokeStyle = grainColor;
         ctx.globalAlpha = 0.38;
         const grainLines = 9;
@@ -76,9 +64,6 @@ export function createWoodTexture(baseColor, grainColor, options = {}) {
     return texture;
 }
 
-// Flat solid-color texture, used for small trim parts like handles so
-// every mesh in the scene (even simple ones) goes through the same
-// texture-mapped shader pipeline.
 export function createSolidTexture(color) {
     const canvas = makeCanvas(64, 64);
     const ctx = canvas.getContext('2d');
@@ -87,7 +72,6 @@ export function createSolidTexture(color) {
     return new THREE.CanvasTexture(canvas);
 }
 
-// Checkerboard tile texture for the room floor.
 export function createFloorTexture() {
     const size = 512;
     const canvas = makeCanvas(size, size);
@@ -121,7 +105,6 @@ export function createFloorTexture() {
     return texture;
 }
 
-// Softly speckled plaster-like texture for the back/side walls.
 export function createWallTexture() {
     const size = 512;
     const canvas = makeCanvas(size, size);

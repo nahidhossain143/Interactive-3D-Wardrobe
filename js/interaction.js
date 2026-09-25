@@ -1,9 +1,3 @@
-// interaction.js
-// Captures raw keyboard and mouse input. Camera orbit/zoom input is
-// accumulated into `inputState` and consumed each frame by camera.js.
-// Discrete actions (drawer/door toggling, light pause) are dispatched
-// immediately on keydown / click.
-
 import * as THREE from '../lib/three.module.js';
 import { resetCamera } from './camera.js';
 
@@ -23,7 +17,6 @@ let lastX = 0;
 let lastY = 0;
 
 export function setupInteraction(canvas, camera, wardrobe, lighting) {
-    // ---------------- Keyboard ----------------
     window.addEventListener('keydown', (event) => {
         inputState.keys[event.code] = true;
         handleActionKey(event.code, wardrobe, lighting);
@@ -33,7 +26,6 @@ export function setupInteraction(canvas, camera, wardrobe, lighting) {
         inputState.keys[event.code] = false;
     });
 
-    // ---------------- Mouse: drag to orbit ----------------
     canvas.addEventListener('mousedown', (event) => {
         isDragging = true;
         dragDistance = 0;
@@ -53,14 +45,12 @@ export function setupInteraction(canvas, camera, wardrobe, lighting) {
     });
 
     window.addEventListener('mouseup', (event) => {
-        // A click (as opposed to a drag) tries to toggle a drawer under the cursor.
         if (isDragging && dragDistance < 5) {
-            handleDrawerClick(event, canvas, camera, wardrobe);
+            handleWardrobeClick(event, canvas, camera, wardrobe);
         }
         isDragging = false;
     });
 
-    // ---------------- Mouse: wheel to zoom ----------------
     canvas.addEventListener(
         'wheel',
         (event) => {
@@ -107,15 +97,20 @@ function handleActionKey(code, wardrobe, lighting) {
     }
 }
 
-function handleDrawerClick(event, canvas, camera, wardrobe) {
+function handleWardrobeClick(event, canvas, camera, wardrobe) {
     const rect = canvas.getBoundingClientRect();
     pointer.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
     pointer.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
 
     raycaster.setFromCamera(pointer, camera);
-    const hits = raycaster.intersectObjects(wardrobe.drawerHitboxes, false);
-    if (hits.length > 0) {
-        const index = hits[0].object.userData.drawerIndex;
-        wardrobe.toggleDrawer(index);
+    const targets = [...wardrobe.drawerHitboxes, ...wardrobe.doorHitboxes];
+    const hits = raycaster.intersectObjects(targets, false);
+    if (hits.length === 0) return;
+
+    const hit = hits[0].object;
+    if (hit.userData.drawerIndex !== undefined) {
+        wardrobe.toggleDrawer(hit.userData.drawerIndex);
+    } else if (hit.userData.isDoor) {
+        wardrobe.toggleDoors();
     }
 }
