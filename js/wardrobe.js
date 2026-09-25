@@ -15,12 +15,10 @@ export function buildWardrobe(shaderSource) {
     const group = new THREE.Group();
 
     const bodyTexture = createWoodTexture('#6b4a30', '#432c1c', { planks: 8 });
-    const drawerTexture = createWoodTexture('#8a5a34', '#5c3a20', { planks: 4 });
     const doorTexture = createWoodTexture('#7a5233', '#4f3220', { planks: 5 });
     const handleTexture = createSolidTexture('#d9c9a1');
 
     const bodyMaterial = createLitMaterial(shaderSource, bodyTexture, { shininess: 12 });
-    const drawerMaterial = createLitMaterial(shaderSource, drawerTexture, { shininess: 18 });
     const doorMaterial = createLitMaterial(shaderSource, doorTexture, { shininess: 18 });
     const handleMaterial = createLitMaterial(shaderSource, handleTexture, { shininess: 70 });
 
@@ -67,21 +65,31 @@ export function buildWardrobe(shaderSource) {
     divider.position.set(0, DRAWER_SECTION_HEIGHT, 0);
     group.add(divider);
 
-    const base = new THREE.Mesh(new THREE.BoxGeometry(WIDTH + 0.04, 0.06, DEPTH + 0.04), bodyMaterial);
+    // Unit cube (1x1x1), reused with the Scaling transformation below
+    // instead of a differently-sized BoxGeometry per mesh - the same
+    // Model-matrix Scale that door/handle rotation and drawer translation
+    // demonstrate for Rotation and Translation.
+    const unitBoxGeometry = new THREE.BoxGeometry(1, 1, 1);
+
+    const base = new THREE.Mesh(unitBoxGeometry, bodyMaterial);
+    base.scale.set(WIDTH + 0.04, 0.06, DEPTH + 0.04);
     base.position.set(0, -0.03, 0);
     group.add(base);
 
     const trimMaterial = createLitMaterial(shaderSource, createSolidTexture('#241811'), { shininess: 22 });
 
-    const cornice = new THREE.Mesh(new THREE.BoxGeometry(WIDTH + 0.1, 0.05, DEPTH + 0.06), bodyMaterial);
+    const cornice = new THREE.Mesh(unitBoxGeometry, bodyMaterial);
+    cornice.scale.set(WIDTH + 0.1, 0.05, DEPTH + 0.06);
     cornice.position.set(0, HEIGHT + 0.025, 0);
     group.add(cornice);
 
-    const corniceTrim = new THREE.Mesh(new THREE.BoxGeometry(WIDTH + 0.1, 0.018, DEPTH + 0.06), trimMaterial);
+    const corniceTrim = new THREE.Mesh(unitBoxGeometry, trimMaterial);
+    corniceTrim.scale.set(WIDTH + 0.1, 0.018, DEPTH + 0.06);
     corniceTrim.position.set(0, HEIGHT - 0.006, 0);
     group.add(corniceTrim);
 
-    const toeKick = new THREE.Mesh(new THREE.BoxGeometry(WIDTH - 0.1, 0.05, 0.02), trimMaterial);
+    const toeKick = new THREE.Mesh(unitBoxGeometry, trimMaterial);
+    toeKick.scale.set(WIDTH - 0.1, 0.05, 0.02);
     toeKick.position.set(0, -0.03, DEPTH / 2 + 0.021);
     group.add(toeKick);
 
@@ -189,6 +197,12 @@ export function buildWardrobe(shaderSource) {
         [clothPalette.olive, clothPalette.mustard],
     ];
 
+    const drawerMaterials = [
+        createLitMaterial(shaderSource, createWoodTexture('#8a5a34', '#5c3a20', { planks: 4 }), { shininess: 18 }),
+        createLitMaterial(shaderSource, createWoodTexture('#7f5230', '#52341c', { planks: 4 }), { shininess: 18 }),
+        createLitMaterial(shaderSource, createWoodTexture('#956338', '#603f22', { planks: 4 }), { shininess: 18 }),
+    ];
+
     for (let i = 0; i < DRAWER_ROWS; i++) {
         const y = PANEL + drawerHeight / 2 + i * rowHeight + 0.015;
         const drawer = createDrawer({
@@ -197,7 +211,7 @@ export function buildWardrobe(shaderSource) {
             depth: drawerDepth,
             y,
             frontZ: DEPTH / 2 - PANEL / 2,
-            material: drawerMaterial,
+            material: drawerMaterials[i],
             handleMaterial,
             index: i,
             stackMaterials: drawerContents[i],

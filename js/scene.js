@@ -99,8 +99,11 @@ export function createScene(shaderSource) {
     return scene;
 }
 
+const UNIT_BOX = new THREE.BoxGeometry(1, 1, 1);
+
 function createTrimStrip({ x, y, z, width, height, depth, material }) {
-    const strip = new THREE.Mesh(new THREE.BoxGeometry(width, height, depth), material);
+    const strip = new THREE.Mesh(UNIT_BOX, material);
+    strip.scale.set(width, height, depth);
     strip.position.set(x, y, z);
     return strip;
 }
