@@ -358,25 +358,37 @@ function createDrawer({ width, height, depth, y, frontZ, material, handleMateria
     pivot.add(handle);
 
     const boxTopY = boxY + boxHeight / 2;
+    // Clear headroom between the box floor and the drawer's own front-panel
+    // edge - contents must fit inside this or they visibly poke up through
+    // the top of the (closed) drawer.
+    const clearance = height / 2 - boxTopY;
     if (stackMaterials && stackMaterials.length) {
+        const stackGap = 0.006;
+        const stackBudget = clearance * 0.7;
+        const layerHeight = Math.max(
+            0.01,
+            (stackBudget - stackGap * (stackMaterials.length - 1)) / stackMaterials.length
+        );
+
         pivot.add(
             createFoldedStack({
-                x: -width * 0.15,
-                z: frontZ - depth / 2,
-                yBase: boxTopY + 0.004,
-                width: width * 0.45,
-                depth: depth * 0.55,
-                layerHeight: 0.035,
+                x: -width * 0.12,
+                z: frontZ - depth * 0.68,
+                yBase: boxTopY + 0.003,
+                width: width * 0.4,
+                depth: depth * 0.4,
+                layerHeight,
                 materials: stackMaterials,
             })
         );
 
+        const rollRadius = Math.min(0.02, clearance * 0.4);
         const roll = new THREE.Mesh(
-            new THREE.CylinderGeometry(0.026, 0.026, 0.085, 12),
+            new THREE.CylinderGeometry(rollRadius, rollRadius, 0.075, 12),
             stackMaterials[stackMaterials.length - 1]
         );
         roll.rotation.x = Math.PI / 2;
-        roll.position.set(width * 0.22, boxTopY + 0.026, frontZ - depth * 0.3);
+        roll.position.set(width * 0.22, boxTopY + rollRadius, frontZ - depth * 0.6);
         pivot.add(roll);
     }
 
